@@ -1,0 +1,15 @@
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.*
+local.properties
+.gradle/
+build/
+.idea/
+*.jks
+*.keystore
+secrets/
+node_modules/
+playwright-report/
+test-results/

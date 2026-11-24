@@ -1,0 +1,21 @@
+name: Cashwise checks
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [development, main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  browser-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node --check app.js
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+      - run: npm test
