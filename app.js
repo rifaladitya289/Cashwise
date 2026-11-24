@@ -6,7 +6,7 @@
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const money = value => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(Number(value) || 0);
-  const today = () => new Date().toISOString().slice(0, 10);
+  const today = () => { const d = new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
   const uid = prefix => prefix + "_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 8);
   let db;
   let state = { page: "home", transactions: [], goals: [], settings: { name: "", theme: "system", reduceMotion: false }, filter: "all", hideBalance: false };
@@ -295,7 +295,7 @@
     $("#addGoalBtn").addEventListener("click",()=>openForm("goal"));
     $("#goalFilters").addEventListener("click",event=>{const button=event.target.closest("[data-filter]");if(!button)return;state.filter=button.dataset.filter;$$(".filter").forEach(el=>el.classList.toggle("active",el===button));render();});
     $("#historySearch").addEventListener("input",render); $("#historyFilter").addEventListener("change",render);
-    $("#themeToggle").addEventListener("click",()=>saveSetting("theme",state.settings.theme==="dark"?"light":"dark"));
+    $("#themeToggle").addEventListener("click",()=>saveSetting("theme",document.body.classList.contains("light")?"dark":"light"));
     $("#themeSelect").addEventListener("change",event=>saveSetting("theme",event.target.value));
     $("#profileName").addEventListener("change",event=>saveSetting("name",event.target.value.trim()));
     $("#reduceMotion").addEventListener("change",event=>saveSetting("reduceMotion",event.target.checked));
