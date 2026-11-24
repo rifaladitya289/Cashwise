@@ -1,0 +1,36 @@
+plugins {
+    id "com.android.application"
+    id "org.jetbrains.kotlin.android"
+}
+
+android {
+    namespace "com.rifaladitya.cashwise"
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.rifaladitya.cashwise"
+        minSdk 23
+        targetSdk 35
+        versionCode 1
+        versionName "0.1.0"
+    }
+}
+
+dependencies {
+    implementation "androidx.webkit:webkit:1.12.1"
+}
+
+tasks.register("copyWebAssets", Copy) {
+    from(rootProject.projectDir.parentFile) {
+        include "index.html"
+        include "styles.css"
+        include "app.js"
+        include "manifest.json"
+        include "service-worker.js"
+    }
+    into layout.projectDirectory.dir("src/main/assets/assets")
+}
+
+tasks.named("preBuild").configure {
+    dependsOn("copyWebAssets")
+}
