@@ -11,6 +11,7 @@
   let db;
   let state = { page: "home", transactions: [], goals: [], settings: { name: "", theme: "system", reduceMotion: false }, filter: "all", hideBalance: false };
   let activeForm = null;
+  let selectedGoalId = null;
 
   function openDB() {
     return new Promise((resolve, reject) => {
@@ -234,15 +235,23 @@
       $("#formDialog").close(); activeForm=null; await loadState(); toast("Berhasil disimpan.");
     } catch(error) { $("#formError").textContent=error.message||"Terjadi kesalahan."; }
   }
-  async function goalMenu(id) {
+  function goalMenu(id) {
     const goal=state.goals.find(g=>g.id===id); if(!goal)return;
-    const choice=prompt("Kelola "+goal.name+"\nKetik: setor, tarik, selesai, beli, hapus");
-    if(!choice)return;
-    if(choice.toLowerCase()==="setor") return openForm("deposit",id);
-    if(choice.toLowerCase()==="tarik") return openForm("withdraw",id);
-    if(choice.toLowerCase()==="selesai") {
-      goal.status="completed"; goal.updatedAt=new Date().toISOString(); await put("goals",goal); await loadState(); toast("Target ditandai selesai.");
-    } else if(choice.toLowerCase()==="beli") {
+    selectedGoalId=id;
+    $("#goalActionTitle").textContent=goal.name;
+    $("#goalActionDescription").textContent=(goal.type==="purchase"?"Target pembelian":"Target tabungan")+" · "+money(goal.saved)+" terkumpul dari "+money(goal.target);
+    $$("[data-goal-action]").forEach(button=>{button.hidden=button.dataset.goalAction==="purchase"&&goal.type!=="purchase";});
+    $("#goalActionDialog").showModal();
+  }
+  async function handleGoalAction(action) {
+    const goal=state.goals.find(g=>g.id===selectedGoalId); if(!goal)return;
+    $("#goalActionDialog").close();
+    if(action==="deposit") return openForm("deposit",goal.id);
+    if(action==="withdraw") return openForm("withdraw",goal.id);
+    if(action==="complete") {
+      goal.status="completed"; goal.updatedAt=new Date().toISOString();
+      await put("goals",goal); await loadState(); toast("Target ditandai selesai.");
+    } else if(action==="purchase") {
       if(goal.type!=="purchase"){toast("Aksi beli hanya tersedia untuk target pembelian.");return;}
       if(goal.saved<=0){toast("Belum ada dana pada target ini.");return;}
       if(!confirm("Catat pembelian "+goal.name+" sebesar "+money(goal.saved)+"? Dana target akan digunakan dan saldo total berkurang."))return;
@@ -251,10 +260,10 @@
       await put("goals",goal);
       await put("transactions",{id:uid("trx"),type:"expense",amount:spent,note:"Pembelian · "+goal.name,category:"Pembelian",goalId:goal.id,date:today(),createdAt:new Date().toISOString()});
       await loadState(); toast("Pembelian berhasil dicatat.");
-    } else if(choice.toLowerCase()==="hapus") {
+    } else if(action==="delete") {
       if(!confirm("Hapus target ini? Dana yang sudah dialokasikan akan dikembalikan ke Available Balance."))return;
       if(goal.saved>0) await put("transactions",{id:uid("trx"),type:"withdrawal",amount:goal.saved,note:"Pengembalian dana · "+goal.name,category:"Tabungan",goalId:goal.id,date:today(),createdAt:new Date().toISOString()});
-      await remove("goals",id); await loadState(); toast("Target dihapus dan dananya dikembalikan.");
+      await remove("goals",goal.id); await loadState(); toast("Target dihapus dan dananya dikembalikan.");
     }
   }
   async function saveSetting(key,value) { state.settings[key]=value; await put("settings",{key,value}); applyTheme(); render(); }
@@ -291,6 +300,8 @@
     });
     $("#entryForm").addEventListener("submit",submitForm);
     $("#closeDialog").addEventListener("click",()=>$("#formDialog").close());
+    $("#closeGoalActions").addEventListener("click",()=>$("#goalActionDialog").close());
+    $("#goalActionDialog").addEventListener("click",event=>{const button=event.target.closest("[data-goal-action]");if(button)handleGoalAction(button.dataset.goalAction);});
     $("#cancelDialog").addEventListener("click",()=>$("#formDialog").close());
     $("#addGoalBtn").addEventListener("click",()=>openForm("goal"));
     $("#goalFilters").addEventListener("click",event=>{const button=event.target.closest("[data-filter]");if(!button)return;state.filter=button.dataset.filter;$$(".filter").forEach(el=>el.classList.toggle("active",el===button));render();});
