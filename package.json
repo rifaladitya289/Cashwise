@@ -1,0 +1,14 @@
+{
+  "name": "cashwise",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Offline-first personal finance and savings tracker",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "vite": "^6.3.5"
+  }
+}
