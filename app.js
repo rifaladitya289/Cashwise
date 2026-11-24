@@ -236,12 +236,21 @@
   }
   async function goalMenu(id) {
     const goal=state.goals.find(g=>g.id===id); if(!goal)return;
-    const choice=prompt("Kelola "+goal.name+"\nKetik: setor, tarik, selesai, hapus");
+    const choice=prompt("Kelola "+goal.name+"\nKetik: setor, tarik, selesai, beli, hapus");
     if(!choice)return;
     if(choice.toLowerCase()==="setor") return openForm("deposit",id);
     if(choice.toLowerCase()==="tarik") return openForm("withdraw",id);
     if(choice.toLowerCase()==="selesai") {
       goal.status="completed"; goal.updatedAt=new Date().toISOString(); await put("goals",goal); await loadState(); toast("Target ditandai selesai.");
+    } else if(choice.toLowerCase()==="beli") {
+      if(goal.type!=="purchase"){toast("Aksi beli hanya tersedia untuk target pembelian.");return;}
+      if(goal.saved<=0){toast("Belum ada dana pada target ini.");return;}
+      if(!confirm("Catat pembelian "+goal.name+" sebesar "+money(goal.saved)+"? Dana target akan digunakan dan saldo total berkurang."))return;
+      const spent=Number(goal.saved);
+      goal.saved=0; goal.status="completed"; goal.updatedAt=new Date().toISOString();
+      await put("goals",goal);
+      await put("transactions",{id:uid("trx"),type:"expense",amount:spent,note:"Pembelian · "+goal.name,category:"Pembelian",goalId:goal.id,date:today(),createdAt:new Date().toISOString()});
+      await loadState(); toast("Pembelian berhasil dicatat.");
     } else if(choice.toLowerCase()==="hapus") {
       if(!confirm("Hapus target ini? Dana yang sudah dialokasikan akan dikembalikan ke Available Balance."))return;
       if(goal.saved>0) await put("transactions",{id:uid("trx"),type:"withdrawal",amount:goal.saved,note:"Pengembalian dana · "+goal.name,category:"Tabungan",goalId:goal.id,date:today(),createdAt:new Date().toISOString()});
