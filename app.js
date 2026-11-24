@@ -325,5 +325,5 @@
     const initial=location.hash.slice(1); if(initial)go(initial);
     if("serviceWorker" in navigator && (location.protocol==="https:" || location.hostname==="localhost")) navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
   }
-  init();
+  window.cashwiseReady = init();
 })();
