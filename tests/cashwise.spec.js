@@ -77,3 +77,38 @@ test("theme preference can be changed and saved", async ({ page }) => {
   await page.reload();
   await expect(page.locator("body")).toHaveClass(/light/);
 });
+test("purchase goal converts allocated savings into an expense", async ({ page }) => {
+  await page.locator('[data-action="income"]').first().click();
+  await page.locator("#f_amount").fill("300000");
+  await page.locator("#f_note").fill("Uang masuk");
+  await page.locator("#entryForm button[type=submit]").click();
+
+  await page.locator('[data-go="savings"]').first().click();
+  await page.locator("#addGoalBtn").click();
+  await page.locator("#f_name").fill("Headset");
+  await page.locator("#f_type").selectOption("purchase");
+  await page.locator("#f_target").fill("100000");
+  await page.locator("#entryForm button[type=submit]").click();
+
+  await page.locator('[data-go="wallet"]').first().click();
+  await page.locator('[data-action="allocate"]').click();
+  await page.locator("#f_amount").fill("100000");
+  await page.locator("#entryForm button[type=submit]").click();
+
+  page.on("dialog", async dialog => {
+    if (dialog.type() === "prompt") await dialog.accept("beli");
+    else await dialog.accept();
+  });
+  await page.locator('[data-go="savings"]').first().click();
+  await page.locator("[data-goal-menu]").first().click();
+  await expect(page.locator("#totalBalance")).toContainText("200.000");
+  await expect(page.locator("#recentTransactions")).toContainText("Pembelian");
+});
+
+test("exports a JSON backup file", async ({ page }) => {
+  await page.locator('[data-go="settings"]').first().click();
+  const downloadPromise = page.waitForEvent("download");
+  await page.locator("#exportBtn").click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toMatch(/^cashwise-backup-.*\\.json$/);
+});
