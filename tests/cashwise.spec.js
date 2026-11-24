@@ -2,6 +2,7 @@ const { test, expect } = require("@playwright/test");
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
+  await page.evaluate(() => window.cashwiseReady);
 });
 
 test("loads dashboard and navigation pages", async ({ page }) => {
