@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
         android:allowBackup="false"
+        android:icon="@drawable/ic_cashwise"
         android:label="Cashwise"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
