@@ -3,7 +3,7 @@ name: Build Cashwise Android APK
 on:
   workflow_dispatch:
   push:
-    branches: [development]
+    branches: [development, main]
 
 jobs:
   debug-apk:
