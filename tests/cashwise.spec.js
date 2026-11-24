@@ -95,12 +95,10 @@ test("purchase goal converts allocated savings into an expense", async ({ page }
   await page.locator("#f_amount").fill("100000");
   await page.locator("#entryForm button[type=submit]").click();
 
-  page.on("dialog", async dialog => {
-    if (dialog.type() === "prompt") await dialog.accept("beli");
-    else await dialog.accept();
-  });
+  page.on("dialog", async dialog => dialog.accept());
   await page.locator('[data-go="savings"]').first().click();
   await page.locator("[data-goal-menu]").first().click();
+  await page.locator("[data-goal-action=\"purchase\"]").click();
   await expect(page.locator("#totalBalance")).toContainText("200.000");
   await expect(page.locator("#recentTransactions")).toContainText("Pembelian");
 });
