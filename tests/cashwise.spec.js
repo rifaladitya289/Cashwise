@@ -88,7 +88,7 @@ test("purchase goal converts allocated savings into an expense", async ({ page }
   await page.locator("#addGoalBtn").click();
   await page.locator("#f_name").fill("Headset");
   await page.locator("#f_type").selectOption("purchase");
-  await page.locator("#f_target").fill("100000");
+  await page.locator("#f_target").fill("150000");
   await page.locator("#entryForm button[type=submit]").click();
 
   await page.locator('[data-go="wallet"]').first().click();
@@ -96,10 +96,14 @@ test("purchase goal converts allocated savings into an expense", async ({ page }
   await page.locator("#f_amount").fill("100000");
   await page.locator("#entryForm button[type=submit]").click();
 
-  page.on("dialog", async dialog => dialog.accept());
   await page.locator('[data-go="savings"]').first().click();
+  await expect(page.locator("[data-goal-menu]").first()).toBeVisible();
   await page.locator("[data-goal-menu]").first().click();
+  await expect(page.locator("#goalActionDialog")).toBeVisible();
+  await expect(page.locator("[data-goal-action=\"purchase\"]")).toBeVisible();
+  page.once("dialog", dialog => dialog.accept());
   await page.locator("[data-goal-action=\"purchase\"]").click();
+  await expect(page.locator("#toast")).toContainText("Pembelian berhasil dicatat");
   await expect(page.locator("#totalBalance")).toContainText("200.000");
   await expect(page.locator("#recentTransactions")).toContainText("Pembelian");
 });
