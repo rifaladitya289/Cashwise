@@ -2,8 +2,6 @@ const { test, expect } = require("@playwright/test");
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
-  await page.evaluate(() => indexedDB.deleteDatabase("cashwise_database"));
-  await page.reload();
 });
 
 test("loads dashboard and navigation pages", async ({ page }) => {
