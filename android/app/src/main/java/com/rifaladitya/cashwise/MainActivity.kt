@@ -1,9 +1,13 @@
 package com.rifaladitya.cashwise
 
 import android.app.Activity
-import android.os.Bundle
 import android.app.AlertDialog
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
 import android.webkit.JsResult
+import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
@@ -13,6 +17,11 @@ import androidx.webkit.WebViewAssetLoader
 
 class MainActivity : Activity() {
     private lateinit var webView: WebView
+    private var filePathCallback: ValueCallback<Array<Uri>>? = null
+
+    companion object {
+        private const val FILE_CHOOSER_REQUEST_CODE = 1201
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +36,8 @@ class MainActivity : Activity() {
             domStorageEnabled = true
             databaseEnabled = true
             allowFileAccess = false
-            allowContentAccess = false
+            // Required for the user-selected JSON document returned by Android's picker.
+            allowContentAccess = true
             javaScriptCanOpenWindowsAutomatically = false
             setSupportMultipleWindows(false)
         }
@@ -40,6 +50,32 @@ class MainActivity : Activity() {
                     .setOnCancelListener { result?.cancel() }
                     .show()
                 return true
+            }
+
+            override fun onShowFileChooser(
+                webView: WebView?,
+                callback: ValueCallback<Array<Uri>>?,
+                fileChooserParams: FileChooserParams?
+            ): Boolean {
+                filePathCallback?.onReceiveValue(null)
+                filePathCallback = callback
+                return try {
+                    val intent = (fileChooserParams?.createIntent()
+                        ?: Intent(Intent.ACTION_OPEN_DOCUMENT)).apply {
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "application/json"
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                    startActivityForResult(
+                        Intent.createChooser(intent, "Pilih backup Cashwise"),
+                        FILE_CHOOSER_REQUEST_CODE
+                    )
+                    true
+                } catch (_: ActivityNotFoundException) {
+                    filePathCallback?.onReceiveValue(null)
+                    filePathCallback = null
+                    false
+                }
             }
         }
 
@@ -57,7 +93,18 @@ class MainActivity : Activity() {
         webView.loadUrl("https://appassets.androidplatform.net/assets/index.html")
     }
 
-    @Deprecated("Deprecated in Android API; retained for compatibility with older devices")
+    @Deprecated("Deprecated Android API retained for compatibility with older devices")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == FILE_CHOOSER_REQUEST_CODE) {
+            val selected = if (resultCode == RESULT_OK) data?.data?.let { arrayOf(it) } else null
+            filePathCallback?.onReceiveValue(selected)
+            filePathCallback = null
+            return
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    @Deprecated("Deprecated Android API retained for compatibility with older devices")
     override fun onBackPressed() {
         if (::webView.isInitialized && webView.canGoBack()) {
             webView.goBack()
