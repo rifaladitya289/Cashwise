@@ -108,5 +108,5 @@ test("exports a JSON backup file", async ({ page }) => {
   const downloadPromise = page.waitForEvent("download");
   await page.locator("#exportBtn").click();
   const download = await downloadPromise;
-  expect(download.suggestedFilename()).toMatch(/^cashwise-backup-.*\\.json$/);
+  expect(download.suggestedFilename()).toMatch(/^cashwise-backup-.*\.json$/);
 });
