@@ -28,7 +28,7 @@ tasks.register("copyWebAssets", Copy) {
         include "manifest.json"
         include "service-worker.js"
     }
-    into layout.projectDirectory.dir("src/main/assets/assets")
+    into layout.projectDirectory.dir("src/main/assets")
 }
 
 tasks.named("preBuild").configure {
