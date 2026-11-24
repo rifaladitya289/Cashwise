@@ -96,7 +96,7 @@ test("purchase goal converts allocated savings into an expense", async ({ page }
   await page.locator("#f_amount").fill("100000");
   await page.locator("#entryForm button[type=submit]").click();
 
-  await page.locator('[data-go="savings"]').first().click();
+  await page.locator('.bottom-nav [data-go="savings"]').click();
   await expect(page.locator("[data-goal-menu]").first()).toBeVisible();
   await page.locator("[data-goal-menu]").first().click();
   await expect(page.locator("#goalActionDialog")).toBeVisible();
