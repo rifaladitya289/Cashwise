@@ -35,7 +35,9 @@ Browser storage can still be cleared by the operating system or browser. Export 
 
 ## Android APK status
 
-The current branch contains the working web application/PWA foundation. A completed Android APK still requires the native WebView wrapper, release signing, and device-level offline testing. Do not distribute an APK until those steps pass.
+An Android WebView wrapper and automated debug-APK workflow are included under `android/` and `.github/workflows/android.yml`. The workflow builds a debug APK and uploads it as the `cashwise-debug-apk` artifact. The first successful CI build and real-device checks are still required before treating the APK as verified.
+
+Open the repository's **Actions** tab, select **Build Cashwise Android APK**, and use **Run workflow** on the `development` branch to request a build. Download the APK from the completed run's Artifacts section.
 
 ## Data model
 
