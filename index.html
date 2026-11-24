@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111720">
+  <meta name="description" content="Cashwise — personal finance and savings tracker that works offline.">
+  <title>Cashwise — Personal Finance</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#home" aria-label="Cashwise Home"><span class="brand-mark">c</span><span>cashwise</span></a>
+      <div class="top-actions"><span class="offline-pill"><i></i> Offline ready</span><button class="icon-btn" id="themeToggle" aria-label="Toggle theme" title="Ganti tema">◐</button></div>
+    </header>
+    <main id="app" tabindex="-1">
+      <section class="page active" id="page-home" data-page="home">
+        <div class="welcome"><div><p class="eyebrow" id="greeting">KEUANGAN PRIBADI</p><h1>Atur uangmu,<br><em>lebih terarah.</em></h1><p class="muted">Semua catatanmu tersimpan di perangkat ini.</p></div><div class="date-chip" id="todayLabel"></div></div>
+        <div class="bento-grid">
+          <article class="panel balance-panel span-2">
+            <div class="panel-head"><span class="eyebrow">TOTAL BALANCE</span><button class="text-btn" id="hideBalance" aria-label="Sembunyikan saldo">Sembunyikan</button></div>
+            <div class="balance-value" id="totalBalance">Rp0</div>
+            <div class="balance-foot"><span class="balance-dot"></span><span id="availableBalance">Rp0 tersedia</span><span class="separator">·</span><span id="savedBalance">Rp0 ditabung</span></div>
+            <div class="balance-actions"><button class="btn btn-light" data-action="income">＋ Pemasukan</button><button class="btn btn-outline" data-action="expense">− Pengeluaran</button></div>
+          </article>
+          <article class="panel stat-panel income-panel"><span class="eyebrow">PEMASUKAN</span><div class="stat-icon">↙</div><strong id="monthIncome">Rp0</strong><small>Bulan ini</small></article>
+          <article class="panel stat-panel expense-panel"><span class="eyebrow">PENGELUARAN</span><div class="stat-icon">↗</div><strong id="monthExpense">Rp0</strong><small>Bulan ini</small></article>
+          <article class="panel savings-panel span-2"><div class="panel-head"><div><span class="eyebrow">SAVINGS OVERVIEW</span><h2>Tabunganmu</h2></div><button class="arrow-link" data-go="savings">Lihat semua ↗</button></div><div class="savings-summary"><strong id="savingsTotal">Rp0</strong><span id="goalCount">0 target aktif</span></div><div class="progress-track"><span id="savingsProgress"></span></div><div class="progress-meta"><span id="savingsPercent">0% dari total saldo</span><span id="savingsAvailable">Rp0</span></div></article>
+          <article class="panel goal-panel span-2"><div class="panel-head"><div><span class="eyebrow">PURCHASE GOALS</span><h2>Rencana pembelian</h2></div><button class="arrow-link" data-go="savings">Kelola ↗</button></div><div id="featuredGoals" class="goal-list"><div class="empty-inline">Belum ada target. Tambahkan barang yang ingin kamu beli.</div></div></article>
+          <article class="panel activity-panel span-2"><div class="panel-head"><div><span class="eyebrow">LATEST RECORDS</span><h2>Aktivitas terbaru</h2></div><button class="arrow-link" data-go="history">Semua ↗</button></div><div id="recentTransactions" class="transaction-list"><div class="empty-inline">Transaksimu akan muncul di sini.</div></div></article>
+        </div>
+      </section>
+      <section class="page" id="page-wallet" data-page="wallet">
+        <div class="page-heading"><p class="eyebrow">MONEY MANAGEMENT</p><h1>Wallet<span>.</span></h1><p class="muted">Catat uang masuk dan keluar dengan sederhana.</p></div>
+        <div class="wallet-overview panel"><span class="eyebrow">TOTAL BALANCE</span><strong id="walletTotal">Rp0</strong><div class="wallet-split"><div><small>Available</small><b id="walletAvailable">Rp0</b></div><div><small>Allocated to goals</small><b id="walletAllocated">Rp0</b></div></div></div>
+        <div class="action-row"><button class="btn btn-primary" data-action="income">＋ Pemasukan</button><button class="btn btn-secondary" data-action="expense">− Pengeluaran</button><button class="btn btn-secondary" data-action="allocate">↗ Alokasikan</button></div>
+        <div class="section-title"><h2>Ringkasan bulan ini</h2></div><div class="two-stats"><article class="panel"><small>Pemasukan</small><strong class="positive" id="walletIncome">Rp0</strong></article><article class="panel"><small>Pengeluaran</small><strong class="negative" id="walletExpense">Rp0</strong></article></div>
+        <div class="section-title"><h2>Catatan terbaru</h2><button class="text-btn" data-go="history">Buka riwayat</button></div><div class="panel" id="walletTransactions"></div>
+      </section>
+      <section class="page" id="page-savings" data-page="savings">
+        <div class="page-heading"><p class="eyebrow">PLAN YOUR NEXT MOVE</p><h1>Savings<span>.</span></h1><p class="muted">Buat tujuanmu sendiri. Atur nominal dananya sesukamu.</p></div>
+        <div class="savings-hero panel"><div><span class="eyebrow">TOTAL DIALOKASIKAN</span><strong id="savingsPageTotal">Rp0</strong><small id="savingsPageCount">0 target aktif</small></div><button class="btn btn-light" id="addGoalBtn">＋ Buat target</button></div>
+        <div class="filter-row" id="goalFilters"><button class="filter active" data-filter="all">Semua</button><button class="filter" data-filter="savings">Tabungan</button><button class="filter" data-filter="purchase">Pembelian</button><button class="filter" data-filter="completed">Selesai</button></div>
+        <div class="goal-grid" id="allGoals"></div>
+      </section>
+      <section class="page" id="page-history" data-page="history">
+        <div class="page-heading"><p class="eyebrow">YOUR MONEY JOURNAL</p><h1>History<span>.</span></h1><p class="muted">Semua perubahan saldo tercatat di sini.</p></div>
+        <div class="history-tools"><input id="historySearch" class="field" type="search" placeholder="Cari catatan atau kategori…" aria-label="Cari transaksi"><select id="historyFilter" class="field" aria-label="Filter transaksi"><option value="all">Semua aktivitas</option><option value="income">Pemasukan</option><option value="expense">Pengeluaran</option><option value="allocation">Alokasi tabungan</option><option value="withdrawal">Penarikan tabungan</option></select></div>
+        <div id="historyList" class="panel history-list"></div>
+      </section>
+      <section class="page" id="page-settings" data-page="settings">
+        <div class="page-heading"><p class="eyebrow">PREFERENCES & DATA</p><h1>Settings<span>.</span></h1><p class="muted">Atur pengalaman dan amankan catatanmu.</p></div>
+        <article class="panel settings-card"><div class="setting-row"><div><b>Nama pengguna</b><small>Ditampilkan di dashboard</small></div><input id="profileName" class="field compact-field" maxlength="32" placeholder="Namamu"></div><div class="setting-row"><div><b>Tampilan</b><small>Pilih tema aplikasi</small></div><select id="themeSelect" class="field compact-field"><option value="system">Ikuti perangkat</option><option value="dark">Dark</option><option value="light">Light</option></select></div><div class="setting-row"><div><b>Kurangi animasi</b><small>Untuk kenyamanan dan performa</small></div><label class="switch"><input type="checkbox" id="reduceMotion"><span></span></label></div></article>
+        <div class="section-title"><h2>Data & backup</h2></div><article class="panel settings-card"><div class="setting-row"><div><b>Export backup</b><small>Simpan seluruh data ke file JSON</small></div><button class="btn btn-secondary btn-small" id="exportBtn">Export</button></div><div class="setting-row"><div><b>Import backup</b><small>Pulihkan data dari file JSON Cashwise</small></div><button class="btn btn-secondary btn-small" id="importBtn">Import</button><input type="file" id="importFile" accept="application/json,.json" hidden></div><div class="setting-row"><div><b>Hapus semua data</b><small>Tindakan ini tidak bisa dibatalkan</small></div><button class="btn btn-danger btn-small" id="resetBtn">Reset</button></div></article>
+        <div class="about-note"><b>Cashwise</b><span>Simple. Elegant. Functional.</span><small>Data disimpan secara lokal di perangkat ini. Buat backup secara berkala.</small></div>
+      </section>
+    </main>
+    <nav class="bottom-nav" aria-label="Navigasi utama">
+      <button class="nav-item active" data-go="home"><span>⌂</span><small>Home</small></button><button class="nav-item" data-go="wallet"><span>▣</span><small>Wallet</small></button><button class="nav-item" data-go="savings"><span>◎</span><small>Savings</small></button><button class="nav-item" data-go="history"><span>↻</span><small>History</small></button><button class="nav-item" data-go="settings"><span>⚙</span><small>Settings</small></button>
+    </nav>
+  </div>
+  <dialog id="formDialog" class="dialog"><form id="entryForm" method="dialog"><div class="dialog-head"><div><p class="eyebrow" id="formEyebrow">NEW RECORD</p><h2 id="formTitle">Tambah transaksi</h2></div><button type="button" class="icon-btn" id="closeDialog" aria-label="Tutup">×</button></div><div id="formFields"></div><p class="form-error" id="formError" role="alert"></p><div class="dialog-actions"><button type="button" class="btn btn-secondary" id="cancelDialog">Batal</button><button type="submit" class="btn btn-primary">Simpan</button></div></form></dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js" defer></script>
+</body>
+</html>
